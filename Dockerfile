@@ -1,5 +1,5 @@
-# Use the official Flutter image from Google's Flutter repository
-FROM google/flutter:3.13.0 AS build
+# Use a stable Flutter image from cirrusci
+FROM cirrusci/flutter:stable AS build
 
 # Set the working directory
 WORKDIR /app
