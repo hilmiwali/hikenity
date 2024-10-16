@@ -1,26 +1,24 @@
-# Use the official Dart SDK image from Dart
-FROM dart:3.5.0 AS build
+# Use the official Flutter image
+FROM cirrusci/flutter:3.13.3 AS build
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the pubspec and pubspec.lock files
+# Copy pubspec files
 COPY pubspec.* /app/
 
-# Get dependencies
-RUN dart pub get
+# Fetch Flutter dependencies
+RUN flutter pub get
 
 # Copy the rest of the application
 COPY . /app
 
-# Compile the application
-RUN dart compile exe bin/hikenity_app.dart -o bin/hikenity_app
+# Build the Flutter app (if applicable, for example for web or desktop)
+# Uncomment the next line if you're building for Flutter web:
+# RUN flutter build web
 
-# Create a second stage with a smaller base image
-FROM scratch AS runtime
+# Optionally, compile the app if you need a native executable for a specific platform:
+# RUN dart compile exe bin/hikenity_app.dart -o bin/hikenity_app
 
-# Copy the compiled application from the build stage
-COPY --from=build /app/bin/hikenity_app /app/hikenity_app
-
-# Set the default command to run the compiled executable
-CMD ["/app/hikenity_app"]
+# Default command to run the Flutter app
+CMD ["flutter", "run", "--no-sound-null-safety"]
