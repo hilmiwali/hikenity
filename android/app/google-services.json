@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "464200726815",
+    "firebase_url": "https://hikenity-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "hikenity",
+    "storage_bucket": "hikenity.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464200726815:android:2ebd747d46bbf2e2d0d82a",
+        "android_client_info": {
+          "package_name": "com.example.hikenity_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "464200726815-0d8e88lfl1iu8p0efq6pk6urq5m5u8v4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hikenity_app",
+            "certificate_hash": "de45057027da3c72fec5a681ddc1c8d59988d672"
+          }
+        },
+        {
+          "client_id": "464200726815-36h81q2gka2nf5k348npvkuj5m2e3jig.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5V7vHvZuIEBKJHszjC_qA04zGfhuEvfE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "464200726815-05qkg9mjauv72patklfutu7vou87etno.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "464200726815-0n92jjbs2of017d40cc9sfb4e6d0pcd7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hikenityApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
