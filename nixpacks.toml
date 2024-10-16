@@ -1,0 +1,2 @@
+[phases.setup]
+nixpkgs = "https://github.com/NixOS/nixpkgs/archive/dart-3.5.0.tar.gz"
