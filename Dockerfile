@@ -1,5 +1,5 @@
 # Use a recent Flutter image from cirrusci with Dart >= 3.5.0
-FROM cirrusci/flutter:3.13.3 AS build
+FROM cirrusci/flutter:3.24.3 AS build
 
 # Set the working directory
 WORKDIR /app
