@@ -11,6 +11,9 @@ USER flutteruser
 # Ensure Git doesn't block due to safe directory checks
 RUN git config --global --add safe.directory /sdks/flutter
 
+# Disable Flutter telemetry to avoid prompts during the build process
+RUN flutter --disable-telemetry
+
 # Copy pubspec files and fetch Flutter dependencies
 COPY pubspec.* /app/
 RUN flutter pub get
