@@ -1,0 +1,15 @@
+[phases.setup]
+commands = [
+    "flutter config --no-analytics",
+    "flutter pub get"
+]
+
+[phases.build]
+commands = [
+    "flutter build web"
+]
+
+[phases.start]
+commands = [
+    "flutter serve --web"
+]
