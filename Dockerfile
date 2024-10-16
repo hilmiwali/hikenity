@@ -1,5 +1,5 @@
 # Use the Cirrus Labs Flutter image with a compatible Dart SDK version
-FROM ghcr.io/cirruslabs/flutter:3.13.6 AS build
+FROM ghcr.io/cirruslabs/flutter:3.24.3 AS build
 
 # Set the working directory
 WORKDIR /app
