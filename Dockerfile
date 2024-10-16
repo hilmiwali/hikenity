@@ -1,5 +1,5 @@
-# Use the official Flutter image from Google's Flutter repository
-FROM google/flutter:3.24.3 AS build
+# Use the Cirrus Labs Flutter image
+FROM ghcr.io/cirruslabs/flutter:3.13.6 AS build
 
 # Set the working directory
 WORKDIR /app
@@ -13,12 +13,8 @@ RUN flutter pub get
 # Copy the rest of the application
 COPY . /app
 
-# Build the Flutter app (if applicable, for example for web or desktop)
-# Uncomment the next line if you're building for Flutter web:
+# Uncomment this if you are building for Flutter web or desktop:
 # RUN flutter build web
-
-# Optionally, compile the app if you need a native executable for a specific platform:
-# RUN dart compile exe bin/hikenity_app.dart -o bin/hikenity_app
 
 # Default command to run the Flutter app
 CMD ["flutter", "run", "--no-sound-null-safety"]
