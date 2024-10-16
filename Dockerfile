@@ -1,20 +1,19 @@
-# Use the Cirrus Labs Flutter image
+# Use the Cirrus Labs Flutter image with a compatible Dart SDK version
 FROM ghcr.io/cirruslabs/flutter:3.13.6 AS build
 
 # Set the working directory
 WORKDIR /app
 
-# Copy pubspec files
-COPY pubspec.* /app/
+# Avoid running Flutter as root by switching to a non-root user
+RUN useradd -ms /bin/bash flutteruser
+USER flutteruser
 
-# Fetch Flutter dependencies
+# Copy pubspec files and fetch Flutter dependencies
+COPY pubspec.* /app/
 RUN flutter pub get
 
 # Copy the rest of the application
 COPY . /app
-
-# Uncomment this if you are building for Flutter web or desktop:
-# RUN flutter build web
 
 # Default command to run the Flutter app
 CMD ["flutter", "run", "--no-sound-null-safety"]
