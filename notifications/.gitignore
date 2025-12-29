@@ -1,0 +1,8 @@
+node_modules/
+*.local
+
+# Firebase Service Account Credentials (NEVER COMMIT THESE)
+*firebase-adminsdk-*.json
+*.json
+!package.json
+!package-lock.json

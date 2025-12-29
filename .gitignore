@@ -9,6 +9,7 @@
 .history
 .svn/
 migrate_working_dir/
+node_modules/
 
 # IntelliJ related
 *.iml
@@ -44,3 +45,8 @@ app.*.map.json
 
 #Dotenv
 .env
+
+# Firebase Service Account Credentials (NEVER COMMIT THESE)
+**/firebase-adminsdk-*.json
+**/*-firebase-adminsdk-*.json
+serviceAccountKey.json
