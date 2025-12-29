@@ -1,6 +1,7 @@
 {
   "projects": {
-    "hikenity": "hikenity"
+    "hikenity": "hikenity",
+    "default": "hikenity"
   },
   "targets": {},
   "etags": {},

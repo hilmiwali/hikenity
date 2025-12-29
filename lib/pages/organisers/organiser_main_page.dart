@@ -48,9 +48,13 @@ class _OrganiserMainPageState extends State<OrganiserMainPage> {
             label: 'Profile',
           ),
         ],
-        selectedItemColor: Colors.blue, // Customize selected tab color
+        selectedItemColor: Colors.green, // Customize selected tab color (green)
         unselectedItemColor: Colors.grey, // Customize unselected tab color
         showUnselectedLabels: true, // Show labels for unselected tabs
+        backgroundColor: Colors.green[45], // Light green background for the bar
+        type: BottomNavigationBarType.fixed, // Prevent shifting on tab selection
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
       ),
     );
   }

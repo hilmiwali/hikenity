@@ -1,13 +1,19 @@
+// android/build.gradle
 buildscript {
     ext.kotlin_version = '2.0.20'  // Correct placement for the Kotlin version
+    //ext.kotlin_version = '1.9.10'
+    //ext.kotlin_version = '1.8.22'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:8.0.0"
+        //classpath "com.android.tools.build:gradle:7.4.2"
+        //classpath "com.android.tools.build:gradle:8.2.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.20"  // This will use the defined Kotlin version
         classpath 'com.google.gms:google-services:4.4.2'
+        //classpath 'com.google.android.gms:play-services-location:18.0.0'
     }
 }
 
@@ -15,6 +21,10 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://maven.google.com" }
+        /*maven {
+            url "https://maven.transistorsoft.com"
+        }*/
     }
 }
 

@@ -2,13 +2,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../role_selector.dart';
-//import 'sign_up_page.dart';
 import 'forgot_password_page.dart';
+import 'participants/home_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final String? redirectTo;
+  const LoginPage({super.key, this.redirectTo});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -24,122 +26,94 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _checkAuthState(); // Check if user is already signed in
+    _checkAuthState(); // Check if the user is already signed in
   }
 
   Future<void> _checkAuthState() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      // User is signed in, navigate to the home or organizer/participant interface
+      await _updateFcmToken(user.uid); // Update FCM token for authenticated user
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
 
       if (userDoc.exists) {
-        String role = userDoc['role'];
+        String role = userDoc['role'] ?? ''; // Default to empty string if 'role' doesn't exist
         if (role == 'organizer') {
           Navigator.pushReplacementNamed(context, '/organiserMain');
         } else if (role == 'participant') {
-          Navigator.pushReplacementNamed(context, '/participantBottomNavBar');
+          if (widget.redirectTo != null) {
+            Navigator.pushReplacementNamed(context, widget.redirectTo!);
+          } else {
+            Navigator.pushReplacementNamed(context, '/participantBottomNavBar');
+          }
+        } else if (role == 'admin') { // Check for admin role
+                Navigator.pushReplacementNamed(context, '/adminBottomNavBar');
+        } else {
+          // Role is undefined, prompt role selection
+          RoleSelector.promptRoleSelection(context, user.uid);
         }
+      } else {
+        // Handle missing user document gracefully
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User data not found. Please contact support.')),
+        );
       }
     }
   }
 
   Future<void> _signInWithEmailAndPassword() async {
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    // Sign in with email and password
-    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    );
-
-    // Check if user exists in Firestore
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userCredential.user!.uid)
-        .get();
-
-    if (userDoc.exists) {
-      // User exists, get their role and navigate accordingly
-      String role = userDoc['role'];
-      if (role == 'organizer') {
-        Navigator.pushReplacementNamed(context, '/organiserMain');
-      } else if (role == 'participant') {
-        Navigator.pushReplacementNamed(context, '/participantBottomNavBar');
-      }
-    } else {
-      // Prompt RoleSelector if user doesn't exist in Firestore
-      RoleSelector.promptRoleSelection(context, userCredential.user!.uid);
-    }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: $e')),
-    );
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
-
-
-  Future<void> _signInWithGoogle() async {
     setState(() {
       _isLoading = true;
     });
+
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        serverClientId:
-            '464200726815-36h81q2gka2nf5k348npvkuj5m2e3jig.apps.googleusercontent.com',
-        scopes: ['email'],
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
-      await googleSignIn.signOut(); // Ensure user signs in fresh
+      User? user = userCredential.user;
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
+      if (user != null && !user.emailVerified) {
+        // If email is not verified, sign out the user
+        await _auth.signOut();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please verify your email before logging in.'),
+          backgroundColor: Colors.red,
+        ));
+        return;
+      }
 
-        UserCredential userCredential =
-            await _auth.signInWithCredential(credential);
+      // Update FCM token in Firestore
+      await _updateFcmToken(user!.uid);
 
-        // Check if user exists in Firestore
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .get();
+      // Check if user exists in Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
 
-        if (userDoc.exists) {
-          // User exists, get their role and navigate accordingly
-          String role = userDoc['role'];
-          if (role == 'organizer') {
-            Navigator.pushReplacementNamed(context, '/organiserMain');
-          } else if (role == 'participant') {
+      if (userDoc.exists) {
+        String role = userDoc['role'] ?? ''; // Safe retrieval of role
+        if (role == 'organizer') {
+          Navigator.pushReplacementNamed(context, '/organiserMain');
+        } else if (role == 'participant') {
+          if (widget.redirectTo != null) {
+            Navigator.pushReplacementNamed(context, widget.redirectTo!);
+          } else {
             Navigator.pushReplacementNamed(context, '/participantBottomNavBar');
           }
-        } else {
-          // Use RoleSelector helper to prompt role selection
-          RoleSelector.promptRoleSelection(context, userCredential.user!.uid);
-        }
+        } else if (role == 'admin') {
+        Navigator.pushReplacementNamed(context, '/adminBottomNavBar'); // Redirect to admin page
+      }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Google Sign-In was canceled.')),
-        );
+        RoleSelector.promptRoleSelection(context, user.uid);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google Sign-In failed: $e')),
+        SnackBar(content: Text('Error: $e')),
       );
     } finally {
       setState(() {
@@ -148,6 +122,107 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        ///serverClientId:
+           //   '464200726815-36h81q2gka2nf5k348npvkuj5m2e3jig.apps.googleusercontent.com',
+        scopes: ['email'],
+        signInOption: SignInOption.standard,  // Make sure it's set to standard to allow account picking
+      );
+
+      await googleSignIn.signOut(); // Clear any existing session
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      
+      if (googleUser == null) {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Get authentication details
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Create credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase
+      final UserCredential userCredential = 
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Update FCM token
+      await _updateFcmToken(userCredential.user!.uid);
+
+      // Check user role
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (!mounted) return; // Check if widget is still mounted
+
+      if (userDoc.exists) {
+        String role = userDoc.get('role') as String? ?? '';
+        if (!mounted) return;
+        
+        switch (role) {
+          case 'organizer':
+            Navigator.pushReplacementNamed(context, '/organiserMain');
+            break;
+          case 'participant':
+            Navigator.pushReplacementNamed(context, 
+              widget.redirectTo ?? '/participantBottomNavBar');
+            break;
+          case 'admin':
+            Navigator.pushReplacementNamed(context, '/adminBottomNavBar');
+            break;
+        }
+      } else {
+        if (!mounted) return;
+        RoleSelector.promptRoleSelection(context, userCredential.user!.uid);
+      }
+
+    } catch (e) {
+      if (!mounted) return;
+      print('Google Sign-In error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign in failed: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _updateFcmToken(String userId) async {
+    try {
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'fcmToken': fcmToken,
+        });
+        print('FCM Token updated: $fcmToken');
+      } else {
+        print('No FCM token found');
+      }
+    } catch (e) {
+      print('Failed to update FCM token: $e');
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -267,6 +342,18 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 20),
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const HomePage()),
+                    );
+                  },
+                  child: const Text(
+                    'Continue as Guest',
+                    style: TextStyle(color: Colors.green),
+                  ),
+                ),
                 const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
@@ -295,4 +382,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-

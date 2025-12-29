@@ -1,10 +1,29 @@
+<!-- AndroidManifest.xml -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.hikenity_app">
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" -->
+    <!-- uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+
     <application
         android:label="Hikenity"
         android:name="${applicationName}"
         android:icon="@mipmap/test"
-        android:enableOnBackInvokedCallback="true">
+        android:enableOnBackInvokedCallback="true"
+        android:requestLegacyExternalStorage="true">
+        
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -14,34 +33,89 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
+            
+            <!-- Specifies an Android theme to apply to this Activity -->
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
+            <!-- Intent-filter for MainActivity -->
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+
+        <!-- Flutter specific meta-data -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-    </application>
-    <!-- Required to query activities that can process text, see:
-         https://developer.android.com/training/package-visibility and
-         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
 
-         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            android:exported="false"/>
+
+    <!-- FCM Service for handling messages -->
+        <service
+            android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+        android:name="androidx.core.content.FileProvider.PATHS"
+        android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Firebase App Check configuration (optional, if needed) -->
+        <meta-data
+            android:name="com.google.firebase.appcheck.AppCheckProviderFactory"
+            android:value="com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory" />
+
+        <!-- Required for initializing FirebaseMessaging -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="default_channel_id"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBBxpwuIAmEQzBEg41YPTH0ZVHH-tMd1xE" />
+
+    </application>
+
+    <!-- Required for querying activities that can process text or handle specific intents -->
     <queries>
+        <!-- Query for activities that process text -->
         <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
+
+        <!-- Query for activities that handle HTTP schemes -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="http" />
+        </intent>
+
+        <!-- Query for activities that handle HTTPS schemes -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="image/*" />
+            
         </intent>
     </queries>
 </manifest>

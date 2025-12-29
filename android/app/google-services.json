@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "464200726815-v4d5uhhbjf0srmttfu82b2jukt9fq4t6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hikenity_app",
+            "certificate_hash": "dd3e272a9751af44a39d86dd44cad60135d4fc89"
+          }
+        },
+        {
           "client_id": "464200726815-36h81q2gka2nf5k348npvkuj5m2e3jig.apps.googleusercontent.com",
           "client_type": 3
         }

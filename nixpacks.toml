@@ -1,6 +1,0 @@
-[phases.setup]
-nixpkgs = "https://github.com/NixOS/nixpkgs/archive/refs/tags/22.11.tar.gz"
-packages = ["dart_3.5.0"]
-
-[phases.build]
-build = "dart pub get"
