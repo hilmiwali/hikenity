@@ -23,6 +23,22 @@
           }
         },
         {
+          "client_id": "464200726815-bk65338cm769gq6dg0cbrlcheb1jul7d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hikenity_app",
+            "certificate_hash": "e6ed094df4b3b132a41f498271e6d2ca92a4811e"
+          }
+        },
+        {
+          "client_id": "464200726815-sse75jthu5orglo974rfd7efhjrtqlhm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hikenity_app",
+            "certificate_hash": "6a9a42fe6a5b56a352ba4bef1420ac4d3cc0867a"
+          }
+        },
+        {
           "client_id": "464200726815-v4d5uhhbjf0srmttfu82b2jukt9fq4t6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

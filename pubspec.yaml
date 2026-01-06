@@ -100,7 +100,7 @@ flutter:
   - assets/image.png
   - assets/default_profile.png
   - assets/image_not_available.png
-  - assets/.env
+  - .env
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

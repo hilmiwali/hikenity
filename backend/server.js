@@ -1,9 +1,24 @@
 //server.js
+require('dotenv').config(); // Load environment variables
 const express = require('express');
-const stripe = require('stripe')('sk_test_51Q8t4GHoyDahNOUZMlYMd4BHJz2mzABpmv2SXPF9G5Q2rIrfaaPqLUBvMnPeHS0fCCw5yYykgH5aTy1h8xipVEiU00dwExeonX'); // Replace with your Stripe secret key
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Use environment variable
 
 const app = express();
 app.use(express.json());
+
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Hikenity Backend Server is running!',
+    version: '1.0.0'
+  });
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
 
 app.post('/create-payment-intent', async (req, res) => {
   const { amount } = req.body;
@@ -49,4 +64,5 @@ app.post('/retrieve-receipt', async (req, res) => {
   }
 });
 
-app.listen(4242, () => console.log('Server is running on port 4242'));
+const PORT = process.env.PORT || 4242;
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

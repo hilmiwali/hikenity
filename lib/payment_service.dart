@@ -2,12 +2,16 @@
 import 'dart:convert';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PaymentService {
   static Future<void> makePayment(int amount) async {
     try {
+      // Get backend URL from environment variables
+      final backendUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:4242';
+      
       // 1. Create payment intent on the backend
-      final url = Uri.parse('http://localhost:4242/create-payment-intent'); // Change to your actual backend URL when deployed
+      final url = Uri.parse('$backendUrl/create-payment-intent');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

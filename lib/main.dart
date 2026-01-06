@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hikenity_app/pages/admin/admin_bottom_nav_bar.dart';
 import 'package:hikenity_app/pages/admin/admin_dashboard_page.dart';
 //import 'package:hikenity_app/auth_check.dart';
@@ -108,8 +109,13 @@ Future<void> initializeBackgroundService(String tripId, String participantId) as
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase and Stripe
-  Stripe.publishableKey = 'pk_test_51Q8t4GHoyDahNOUZwYGLwj03mVqP5KdKKPTdhRcbKT4AOvvYeYRMlAruk0qYbm2LGhM5CnQUxQp83xEZSJXepZEa00pebLyRE2';
+  // Load environment variables
+  await dotenv.load(fileName: ".env");
+
+  // Initialize Stripe with environment variable
+  Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
+  
+  // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
